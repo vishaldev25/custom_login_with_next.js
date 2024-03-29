@@ -18,7 +18,6 @@ const LoginForm = () => {
                       Dont have an account? <span className="underline">Register</span>
                   </Link>
               </form>  
-                 
       </div>
     </div>
   )

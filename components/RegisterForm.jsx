@@ -2,12 +2,14 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 const RegisterForm = () => {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
+    const router = useRouter()
 
     const handleSubmit = async (e) => { 
         e.preventDefault()
@@ -16,8 +18,23 @@ const RegisterForm = () => {
             setError("Please fill all the fields")
             return
         }
-
         try {
+            const responseUserExists = await fetch("/api/userExists", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email
+                }),
+            })
+
+            const { user } = await responseUserExists.json()
+
+            if (user) {
+                setError("User already exists")
+                return
+            }
             const options = {
                 method: "POST",
                 headers: {
@@ -33,6 +50,7 @@ const RegisterForm = () => {
             if (response.ok) {
                 const form = e.target
                 form.reset()
+                router.push("/")
             }
         } catch (error) {
             console.log("User Registration Failed")
